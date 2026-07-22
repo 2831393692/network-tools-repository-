@@ -2,8 +2,9 @@ import sys
 import os
 import traceback
 
-if getattr(sys, 'frozen', False):
-    os.chdir(sys._MEIPASS)
+# PyInstaller 打包后，_MEIPASS 指向临时解压目录
+# 注意：不 chdir 到 _MEIPASS，避免相对路径的文件保存到临时目录（程序退出后被删除）
+# 如需访问打包在 exe 内的资源文件，使用 os.path.join(sys._MEIPASS, 'resource_path')
 
 from app.main_window import MainWindow
 from app.core.permission import AdminChecker

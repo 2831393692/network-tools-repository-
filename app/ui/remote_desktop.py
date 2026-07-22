@@ -28,8 +28,9 @@ class RemoteDesktopPage(QWidget):
         self.load_history()
 
     def _get_history_path(self):
-        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        data_dir = os.path.join(base_dir, "data")
+        # 使用用户家目录存储历史记录，避免 PyInstaller onefile 模式下
+        # __file__ 指向临时解压目录导致历史记录丢失
+        data_dir = os.path.join(os.path.expanduser("~"), ".network-toolkit", "data")
         os.makedirs(data_dir, exist_ok=True)
         return os.path.join(data_dir, "rdp_history.json")
 

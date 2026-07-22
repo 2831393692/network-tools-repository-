@@ -229,7 +229,9 @@ class SshConnectDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle("新建 SSH 连接")
         self.setMinimumWidth(400)
-        self.history_file = os.path.join(os.path.dirname(__file__), '..', 'data', 'ssh_history.json')
+        # 使用用户家目录存储历史记录，避免 PyInstaller onefile 模式下
+        # __file__ 指向临时解压目录导致历史记录丢失
+        self.history_file = os.path.join(os.path.expanduser("~"), ".network-toolkit", "data", "ssh_history.json")
         self.history = self._load_history()
         self.init_ui()
 
