@@ -33,12 +33,8 @@ project_03_network-testing-toolkit/
 ```
 
 ## 安装方式
-
-待定。
-
+下载exe文件
 ## 运行方式
-
-待定。
 
 ## 后续计划
 
