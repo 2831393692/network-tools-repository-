@@ -3,6 +3,8 @@ import threading
 import time
 import subprocess
 import re
+import os
+import sys
 from concurrent.futures import ThreadPoolExecutor
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QGridLayout,
@@ -118,9 +120,33 @@ class SpeedInternalPage(QWidget):
         if hasattr(self, 'client_progress'):
             self.client_progress.setValue(100)
 
+    def get_iperf3_path(self):
+        if hasattr(self, '_iperf3_path') and self._iperf3_path:
+            return self._iperf3_path
+
+        if getattr(sys, 'frozen', False):
+            exe_dir = os.path.dirname(sys.executable)
+        else:
+            exe_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+        candidates = [
+            os.path.join(exe_dir, 'iperf3.exe'),
+            os.path.join(exe_dir, 'tools', 'iperf3.exe'),
+            os.path.join(exe_dir, 'bin', 'iperf3.exe'),
+        ]
+
+        for c in candidates:
+            if os.path.isfile(c):
+                self._iperf3_path = c
+                return c
+
+        self._iperf3_path = 'iperf3'
+        return 'iperf3'
+
     def check_iperf3(self):
         try:
-            result = subprocess.run(["iperf3", "--version"], capture_output=True, text=True, timeout=5)
+            iperf3_path = self.get_iperf3_path()
+            result = subprocess.run([iperf3_path, "--version"], capture_output=True, text=True, timeout=5, creationflags=subprocess.CREATE_NO_WINDOW)
             return result.returncode == 0
         except Exception:
             return False
@@ -128,7 +154,7 @@ class SpeedInternalPage(QWidget):
     def get_local_ips(self):
         ips = []
         try:
-            result = subprocess.run(["ipconfig"], capture_output=True, text=True, timeout=5)
+            result = subprocess.run(["ipconfig"], capture_output=True, text=True, timeout=5, creationflags=subprocess.CREATE_NO_WINDOW)
             for line in result.stdout.split('\n'):
                 if "IPv4" in line:
                     match = re.search(r":\s*(\d+\.\d+\.\d+\.\d+)", line)
@@ -203,9 +229,28 @@ class SpeedInternalPage(QWidget):
         self.local_ip_combo.setStyleSheet(self._combo_style())
         grid.addWidget(self.local_ip_combo, 1, 1)
 
-        tip_label = QLabel("⚠ 提示: 服务端监听所有网卡(0.0.0.0), 上方显示本机可用IP供客户端连接")
+        grid.addWidget(self._styled_label("测试引擎:"), 2, 0)
+        self.server_engine_group = QButtonGroup(self)
+        self.server_engine_builtin = QRadioButton("内置引擎")
+        self.server_engine_iperf3 = QRadioButton("iperf3")
+        self.server_engine_builtin.setChecked(True)
+        server_engine_layout = QHBoxLayout()
+        for r in (self.server_engine_builtin, self.server_engine_iperf3):
+            r.setStyleSheet("color: #555; font-size: 12px;")
+            server_engine_layout.addWidget(r)
+            self.server_engine_group.addButton(r)
+        server_engine_layout.addStretch()
+        grid.addLayout(server_engine_layout, 2, 1)
+
+        if not self.iperf3_installed:
+            self.server_engine_iperf3.setEnabled(False)
+            iperf3_tip = QLabel("❌ iperf3未安装(点击查看安装方法)")
+            iperf3_tip.setStyleSheet("color: #c00; font-size: 11px;")
+            grid.addWidget(iperf3_tip, 3, 0, 1, 2)
+
+        tip_label = QLabel("⚠ 提示: 服务端监听所有网卡(0.0.0.0), 上方显示本机可用IP供客户端连接。请确保两端使用相同引擎！")
         tip_label.setStyleSheet("color: #ed7d31; font-size: 10px;")
-        grid.addWidget(tip_label, 2, 0, 1, 2)
+        grid.addWidget(tip_label, 4, 0, 1, 2)
 
         layout.addLayout(grid)
 
@@ -381,6 +426,8 @@ class SpeedInternalPage(QWidget):
     def start_server(self):
         if self.server_running:
             return
+
+        port = self.server_port.value()
         self.server_running = True
         self.worker.is_running = True
         self.start_server_btn.setEnabled(False)
@@ -388,8 +435,16 @@ class SpeedInternalPage(QWidget):
         self.server_log.clear()
         self.server_log.append("服务端启动中...")
 
-        port = self.server_port.value()
-        self.server_thread = threading.Thread(target=self.run_server, args=(port,))
+        if self.server_engine_iperf3.isChecked():
+            if not self.iperf3_installed:
+                QMessageBox.warning(self, "警告", "iperf3 未安装，无法使用 iperf3 引擎")
+                self.server_running = False
+                self.start_server_btn.setEnabled(True)
+                self.stop_server_btn.setEnabled(False)
+                return
+            self.server_thread = threading.Thread(target=self.run_iperf3_server, args=(port,))
+        else:
+            self.server_thread = threading.Thread(target=self.run_builtin_server, args=(port,))
         self.server_thread.start()
 
     def stop_server(self):
@@ -400,11 +455,21 @@ class SpeedInternalPage(QWidget):
                 self.server_socket.close()
             except Exception:
                 pass
+        if hasattr(self, 'iperf3_proc') and self.iperf3_proc:
+            try:
+                self.iperf3_proc.terminate()
+                self.iperf3_proc.wait(timeout=2)
+            except Exception:
+                try:
+                    self.iperf3_proc.kill()
+                except Exception:
+                    pass
+            self.iperf3_proc = None
         self.start_server_btn.setEnabled(True)
         self.stop_server_btn.setEnabled(False)
         self.server_log.append("服务端已停止")
 
-    def run_server(self, port):
+    def run_builtin_server(self, port):
         try:
             self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -412,7 +477,7 @@ class SpeedInternalPage(QWidget):
             self.server_socket.listen(10)
             self.server_socket.settimeout(1)
 
-            self.worker.emit_server_status(f"服务端已启动, 监听端口: {port}")
+            self.worker.emit_server_status(f"内置服务端已启动, 监听端口: {port}")
             self.worker.emit_server_status(f"本机IP: {', '.join(self.local_ips)}")
             self.worker.emit_server_status("等待客户端连接...")
 
@@ -431,6 +496,43 @@ class SpeedInternalPage(QWidget):
             self.worker.emit_server_status(f"启动失败: {e}")
             self.start_server_btn.setEnabled(True)
             self.stop_server_btn.setEnabled(False)
+
+    def run_iperf3_server(self, port):
+        try:
+            self.worker.emit_server_status(f"iperf3 服务端启动中, 端口: {port}...")
+            iperf3_path = self.get_iperf3_path()
+            startupinfo = subprocess.STARTUPINFO()
+            startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = subprocess.SW_HIDE
+            self.iperf3_proc = subprocess.Popen(
+                [iperf3_path, "-s", "-p", str(port)],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                startupinfo=startupinfo,
+                creationflags=subprocess.CREATE_NO_WINDOW
+            )
+            self.worker.emit_server_status(f"iperf3 服务端已启动, 监听端口: {port}")
+            self.worker.emit_server_status(f"本机IP: {', '.join(self.local_ips)}")
+            self.worker.emit_server_status("等待客户端连接...")
+
+            while self.server_running and self.iperf3_proc.poll() is None:
+                try:
+                    line = self.iperf3_proc.stdout.readline()
+                    if line:
+                        self.worker.emit_server_status(line.strip())
+                except Exception:
+                    break
+                time.sleep(0.1)
+
+            if self.iperf3_proc.poll() is not None:
+                self.worker.emit_server_status("iperf3 服务端已退出")
+
+        except Exception as e:
+            self.worker.emit_server_status(f"iperf3 启动失败: {e}")
+        finally:
+            self.server_running = False
+            self.worker.emit_server_finished()
 
     def handle_client(self, conn, addr):
         try:
@@ -599,16 +701,17 @@ class SpeedInternalPage(QWidget):
             self.worker.emit_client_result(f"测试失败: {e}")
 
     def run_iperf3_test(self, server_ip, port, duration):
+        iperf3_path = self.get_iperf3_path()
         try:
             mode = "-R" if self.mode_upload.isChecked() else ""
             if self.mode_both.isChecked():
                 mode = ""
 
-            cmd = ["iperf3", "-c", server_ip, "-p", str(port), "-t", str(duration), "-i", "1"]
+            cmd = [iperf3_path, "-c", server_ip, "-p", str(port), "-t", str(duration), "-i", "1"]
             if mode:
                 cmd.append(mode)
 
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=duration + 10)
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=duration + 10, creationflags=subprocess.CREATE_NO_WINDOW)
             self.worker.emit_client_result(result.stdout)
             if result.returncode != 0:
                 self.worker.emit_client_result(f"错误: {result.stderr}")

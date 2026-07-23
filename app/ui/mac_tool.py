@@ -581,7 +581,7 @@ def get_arp_table():
     arp_entries = []
     try:
         if platform.system() == 'Windows':
-            result = subprocess.run(['arp', '-a'], capture_output=True, text=True, encoding='gbk')
+            result = subprocess.run(['arp', '-a'], capture_output=True, text=True, encoding='gbk', creationflags=subprocess.CREATE_NO_WINDOW)
             lines = result.stdout.strip().split('\n')
             for line in lines:
                 line = line.strip()
@@ -597,7 +597,7 @@ def get_arp_table():
                         }
                         arp_entries.append(entry)
         else:
-            result = subprocess.run(['arp', '-a'], capture_output=True, text=True)
+            result = subprocess.run(['arp', '-a'], capture_output=True, text=True, creationflags=subprocess.CREATE_NO_WINDOW)
             lines = result.stdout.strip().split('\n')
             for line in lines:
                 line = line.strip()

@@ -822,7 +822,7 @@ class NetworkHealthPage(QWidget):
         try:
             result = subprocess.run(
                 ["route", "print", "0.0.0.0"],
-                capture_output=True, text=True, encoding="gbk", timeout=5
+                capture_output=True, text=True, encoding="gbk", timeout=5, creationflags=subprocess.CREATE_NO_WINDOW
             )
             for line in result.stdout.split('\n'):
                 if '0.0.0.0' in line:
@@ -837,7 +837,7 @@ class NetworkHealthPage(QWidget):
         try:
             result = subprocess.run(
                 ["ping", "-n", "1", "-w", "1000", host],
-                capture_output=True, text=True, timeout=2
+                capture_output=True, text=True, timeout=2, creationflags=subprocess.CREATE_NO_WINDOW
             )
             match = re.search(r"时间[=<](\d+)ms", result.stdout)
             if match:

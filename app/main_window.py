@@ -215,14 +215,11 @@ class MainWindow(QMainWindow):
                 ("数据包抓包", "packet_capture", PacketCapturePage),
                 ("协议分析", "protocol_analysis", ProtocolAnalysisPage),
                 ("DHCP检测", "dhcp_check", DHCPCheckPage),
-                ("WiFi分析", "wifi_analysis", None),
-                ("终端端口", "terminal_port", None),
             ]),
             ("实用工具", "#4472c4", [
                 ("子网计算", "subnet_calc", SubnetCalcPage),
                 ("IP信息检测", "ip_info", IPInfoCheckPage),
                 ("MAC地址", "mac_tool", MACAddressToolPage),
-                ("WiFi密码", "wifi_password", None),
                 ("路由表", "route_table", RouteTablePage),
                 ("连接测试", "connection_test", ConnectionTestPage),
             ]),
@@ -241,8 +238,6 @@ class MainWindow(QMainWindow):
                 ("串口调试", "serial_debug", SerialDebugPage),
             ]),
             ("智能系统", "#7e6000", [
-                ("AI网格助手", "ai_assistant", None),
-                ("系统设置", "system_settings", None),
                 ("关于和支持", "about", AboutPage),
             ]),
         ]

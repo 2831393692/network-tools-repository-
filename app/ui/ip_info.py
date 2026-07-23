@@ -102,9 +102,9 @@ def get_arp_table_entries():
     arp_map = {}
     try:
         if platform.system() == 'Windows':
-            result = subprocess.run(['arp', '-a'], capture_output=True, text=True, errors='ignore')
+            result = subprocess.run(['arp', '-a'], capture_output=True, text=True, errors='ignore', creationflags=subprocess.CREATE_NO_WINDOW)
         else:
-            result = subprocess.run(['arp', '-a'], capture_output=True, text=True)
+            result = subprocess.run(['arp', '-a'], capture_output=True, text=True, creationflags=subprocess.CREATE_NO_WINDOW)
         lines = (result.stdout or '').strip().split('\n')
         for line in lines:
             line = line.strip()
@@ -162,12 +162,14 @@ def ping_host(ip, count=1, timeout=1):
                 ['ping', '-n', str(count), '-w', str(int(timeout * 1000)), ip],
                 capture_output=True, text=True,
                 errors='ignore',  # 防止GBK解码错误
-                timeout=timeout + 2
+                timeout=timeout + 2,
+                creationflags=subprocess.CREATE_NO_WINDOW
             )
         else:
             result = subprocess.run(
                 ['ping', '-c', str(count), '-W', str(timeout), ip],
-                capture_output=True, text=True, timeout=timeout + 2
+                capture_output=True, text=True, timeout=timeout + 2,
+                creationflags=subprocess.CREATE_NO_WINDOW
             )
         out = result.stdout or ''
         return 'TTL=' in out or 'ttl=' in out

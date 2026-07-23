@@ -1214,7 +1214,7 @@ class PingTestPage(QWidget):
             sent += 1
             cmd = f"ping -n 1 -w 2000 -l {size} {target}"
             try:
-                result = subprocess.run(cmd, capture_output=True, text=True, timeout=5)
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=5, creationflags=subprocess.CREATE_NO_WINDOW)
                 success, latency, ttl, reason = self._parse_ping_output(result.stdout)
                 if success:
                     received += 1
@@ -1283,7 +1283,7 @@ class PingTestPage(QWidget):
             self.worker.emit_log(f"[{datetime.now().strftime('%H:%M:%S')}] 发送数据包 #{sent}...")
             cmd = f"ping -n 1 -w 2000 -l {size} {target}"
             try:
-                result = subprocess.run(cmd, capture_output=True, text=True, timeout=5)
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=5, creationflags=subprocess.CREATE_NO_WINDOW)
                 success, latency, ttl, reason = self._parse_ping_output(result.stdout)
                 if success:
                     received += 1
@@ -1397,7 +1397,7 @@ class PingTestPage(QWidget):
         try:
             timeout_s = timeout_ms / 1000
             cmd = f"ping -n 1 -w {timeout_ms} {host}"
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_s + 2)
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_s + 2, creationflags=subprocess.CREATE_NO_WINDOW)
             success, latency, ttl, _ = self._parse_ping_output(result.stdout)
             if success:
                 return True, latency, ttl
@@ -1468,7 +1468,7 @@ class PingTestPage(QWidget):
 
             try:
                 cmd = f"ping -n 1 -w {timeout * 1000} -l {size} {host}"
-                result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout + 2)
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout + 2, creationflags=subprocess.CREATE_NO_WINDOW)
                 # 使用统一的解析函数，兼容中英文 Windows 系统
                 success, _, _, _ = self._parse_ping_output(result.stdout)
                 return host, last_num, success

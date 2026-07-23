@@ -4,6 +4,7 @@ import socket
 import platform
 import subprocess
 import re
+import threading
 from datetime import datetime
 from collections import deque
 from PySide6.QtWidgets import (
@@ -192,12 +193,13 @@ class DashboardPage(QWidget):
         self.last_network_stats = psutil.net_io_counters()
         self.last_update_time = time.time()
         self.tick_count = 0
-        self.gateway = self.get_gateway()
+        self.gateway = "192.168.1.1"
         self.dns_server = "223.5.5.5"
         self.system_logs = deque(maxlen=100)
         self.init_ui()
         self.add_log("系统就绪，工具已启动")
         self.start_update_timer()
+        QTimer.singleShot(500, self._init_gateway)
     
     def init_ui(self):
         layout = QVBoxLayout(self)
@@ -432,11 +434,20 @@ class DashboardPage(QWidget):
                 page_class, page_name = page_map[page_key]
                 self.main_window.switch_page(page_key, page_class, page_name)
     
+    def _init_gateway(self):
+        threading.Thread(target=self._fetch_gateway, daemon=True).start()
+
+    def _fetch_gateway(self):
+        gateway = self.get_gateway()
+        if gateway:
+            self.gateway = gateway
+
     def get_gateway(self):
         try:
             result = subprocess.run(
                 ["route", "print", "0.0.0.0"],
-                capture_output=True, text=True, encoding="gbk", timeout=5
+                capture_output=True, text=True, encoding="gbk", timeout=5,
+                creationflags=subprocess.CREATE_NO_WINDOW
             )
             for line in result.stdout.split('\n'):
                 if '0.0.0.0' in line:
@@ -446,7 +457,7 @@ class DashboardPage(QWidget):
         except Exception:
             pass
         return "192.168.1.1"
-    
+
     def get_ip_address(self):
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -505,8 +516,8 @@ class DashboardPage(QWidget):
                 self.check_connection()
             
             self.tick_count = getattr(self, 'tick_count', 0) + 1
-        except Exception as e:
-            print(f"Update error: {e}")
+        except Exception:
+            pass
     
     def update_cpu(self):
         try:
@@ -609,7 +620,8 @@ class DashboardPage(QWidget):
         try:
             result = subprocess.run(
                 ["ping", "-n", "1", "-w", "1000", host],
-                capture_output=True, text=True, timeout=2
+                capture_output=True, text=True, timeout=2,
+                creationflags=subprocess.CREATE_NO_WINDOW
             )
             match = re.search(r"时间[=<](\d+)ms", result.stdout)
             if match:

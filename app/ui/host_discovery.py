@@ -178,7 +178,7 @@ def parse_mac_address(ip):
     try:
         result = subprocess.run(
             ["arp", "-a", ip],
-            capture_output=True, text=True, timeout=3
+            capture_output=True, text=True, timeout=3, creationflags=subprocess.CREATE_NO_WINDOW
         )
         match = re.search(r'([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})', result.stdout)
         if match:
@@ -1106,7 +1106,7 @@ class HostDiscoveryPage(QWidget):
         try:
             result = subprocess.run(
                 f"ping -n 1 -w {timeout * 1000} {host}",
-                capture_output=True, text=True, timeout=timeout + 2
+                capture_output=True, text=True, timeout=timeout + 2, creationflags=subprocess.CREATE_NO_WINDOW
             )
             m = re.search(r'(?:时间|time)\s*[<=]?\s*(\d+)\s*ms', result.stdout, re.IGNORECASE)
             if m:

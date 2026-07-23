@@ -492,7 +492,7 @@ class FirewallPage(QWidget):
             cmd = f"""
                 netsh advfirewall firewall add rule name="{rule_name}" dir={direction} action={action} program="{app_path}" enable=yes profile={profile}
             """
-            result = subprocess.run(["powershell", "-Command", cmd], capture_output=True, text=True)
+            result = subprocess.run(["powershell", "-Command", cmd], capture_output=True, text=True, creationflags=subprocess.CREATE_NO_WINDOW)
 
             if result.returncode == 0:
                 self.append_log(f"✅ 已添加应用规则: {rule_name}")
@@ -524,7 +524,7 @@ class FirewallPage(QWidget):
             cmd = f"""
                 netsh advfirewall firewall add rule name="{rule_name}" dir={direction} action={action} protocol={protocol} localport={port} enable=yes profile={profile}
             """
-            result = subprocess.run(["powershell", "-Command", cmd], capture_output=True, text=True)
+            result = subprocess.run(["powershell", "-Command", cmd], capture_output=True, text=True, creationflags=subprocess.CREATE_NO_WINDOW)
 
             if result.returncode == 0:
                 self.append_log(f"✅ 已添加端口规则: {rule_name} ({port}/{protocol})")
@@ -574,7 +574,7 @@ class FirewallPage(QWidget):
         try:
             result = subprocess.run(
                 ["powershell", "-Command", "Get-NetFirewallProfile | Select-Object Name, Enabled"],
-                capture_output=True, text=True
+                capture_output=True, text=True, creationflags=subprocess.CREATE_NO_WINDOW
             )
             if result.returncode == 0:
                 self.append_log(f"📊 防火墙状态:\n{result.stdout}")
@@ -616,7 +616,7 @@ class FirewallPage(QWidget):
                 cmd_parts.append('protocol=TCP')
 
             cmd = " ".join(cmd_parts)
-            result = subprocess.run(["powershell", "-Command", cmd], capture_output=True, text=True)
+            result = subprocess.run(["powershell", "-Command", cmd], capture_output=True, text=True, creationflags=subprocess.CREATE_NO_WINDOW)
 
             if result.returncode == 0:
                 self.append_log(f"✅ 已添加五元组规则: {rule_name}")
@@ -646,7 +646,7 @@ class FirewallPage(QWidget):
             rule_name = f"网络工具箱_域名_{domain}"
             ips = ",".join(ip_list)
             cmd = f'netsh advfirewall firewall add rule name="{rule_name}" dir=out action=allow remoteip={ips} description="域名规则: {domain}"'
-            result = subprocess.run(["powershell", "-Command", cmd], capture_output=True, text=True)
+            result = subprocess.run(["powershell", "-Command", cmd], capture_output=True, text=True, creationflags=subprocess.CREATE_NO_WINDOW)
 
             if result.returncode == 0:
                 self.append_log(f"✅ 已添加域名规则: {rule_name} (解析到 {len(ip_list)} 个IP)")
@@ -668,7 +668,7 @@ class FirewallPage(QWidget):
         try:
             result = subprocess.run(
                 ["netsh", "advfirewall", "firewall", "show", "rule", f"name={rule_name}"],
-                capture_output=True, text=True, errors='ignore'
+                capture_output=True, text=True, errors='ignore', creationflags=subprocess.CREATE_NO_WINDOW
             )
             if result.returncode == 0 and "规则名称" in result.stdout:
                 self.append_log(f"📋 查询规则 [{rule_name}]:\n{result.stdout.strip()}")
@@ -687,7 +687,7 @@ class FirewallPage(QWidget):
 
         try:
             cmd = f'netsh advfirewall firewall set rule name="{rule_name}" new enable=yes'
-            result = subprocess.run(["powershell", "-Command", cmd], capture_output=True, text=True)
+            result = subprocess.run(["powershell", "-Command", cmd], capture_output=True, text=True, creationflags=subprocess.CREATE_NO_WINDOW)
 
             if result.returncode == 0:
                 self.append_log(f"✅ 已启用规则: {rule_name}")
@@ -707,7 +707,7 @@ class FirewallPage(QWidget):
 
         try:
             cmd = f'netsh advfirewall firewall set rule name="{rule_name}" new enable=no'
-            result = subprocess.run(["powershell", "-Command", cmd], capture_output=True, text=True)
+            result = subprocess.run(["powershell", "-Command", cmd], capture_output=True, text=True, creationflags=subprocess.CREATE_NO_WINDOW)
 
             if result.returncode == 0:
                 self.append_log(f"⛔ 已禁用规则: {rule_name}")
@@ -731,7 +731,7 @@ class FirewallPage(QWidget):
 
         try:
             cmd = f'netsh advfirewall firewall delete rule name="{rule_name}"'
-            result = subprocess.run(["powershell", "-Command", cmd], capture_output=True, text=True)
+            result = subprocess.run(["powershell", "-Command", cmd], capture_output=True, text=True, creationflags=subprocess.CREATE_NO_WINDOW)
 
             if result.returncode == 0:
                 self.append_log(f"🗑️ 已删除规则: {rule_name}")
@@ -746,7 +746,7 @@ class FirewallPage(QWidget):
         """开启防火墙"""
         try:
             cmd = 'Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled True'
-            result = subprocess.run(["powershell", "-Command", cmd], capture_output=True, text=True)
+            result = subprocess.run(["powershell", "-Command", cmd], capture_output=True, text=True, creationflags=subprocess.CREATE_NO_WINDOW)
 
             if result.returncode == 0:
                 self.append_log("🔥 防火墙已开启（域/专用/公用）")

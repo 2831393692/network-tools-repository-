@@ -253,7 +253,8 @@ class ToolsPage(QWidget):
                 ["route", "print"],
                 capture_output=True,
                 text=True,
-                encoding="gbk"
+                encoding="gbk",
+                creationflags=subprocess.CREATE_NO_WINDOW
             )
             
             lines = result.stdout.split('\n')

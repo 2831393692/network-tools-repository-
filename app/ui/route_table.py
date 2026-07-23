@@ -19,7 +19,7 @@ def get_route_table():
     routes = []
     try:
         if platform.system() == 'Windows':
-            result = subprocess.run(['route', 'print'], capture_output=True, text=True, errors='ignore')
+            result = subprocess.run(['route', 'print'], capture_output=True, text=True, errors='ignore', creationflags=subprocess.CREATE_NO_WINDOW)
             lines = (result.stdout or '').split('\n')
 
             ipv4_section = False
@@ -55,7 +55,7 @@ def get_route_table():
                     })
         else:
             # Linux/Mac
-            result = subprocess.run(['ip', 'route'], capture_output=True, text=True)
+            result = subprocess.run(['ip', 'route'], capture_output=True, text=True, creationflags=subprocess.CREATE_NO_WINDOW)
             for line in (result.stdout or '').split('\n'):
                 line = line.strip()
                 if not line:
@@ -86,7 +86,7 @@ def add_route_network(dest, mask, gateway):
             cmd = ['route', 'add', dest, 'mask', mask, gateway]
         else:
             cmd = ['sudo', 'ip', 'route', 'add', f"{dest}/{mask}", 'via', gateway]
-        result = subprocess.run(cmd, capture_output=True, text=True, errors='ignore')
+        result = subprocess.run(cmd, capture_output=True, text=True, errors='ignore', creationflags=subprocess.CREATE_NO_WINDOW)
         if result.returncode == 0:
             return True, "路由添加成功"
         else:
@@ -102,7 +102,7 @@ def delete_route_network(dest, mask, gateway):
             cmd = ['route', 'delete', dest, 'mask', mask, gateway]
         else:
             cmd = ['sudo', 'ip', 'route', 'del', f"{dest}/{mask}", 'via', gateway]
-        result = subprocess.run(cmd, capture_output=True, text=True, errors='ignore')
+        result = subprocess.run(cmd, capture_output=True, text=True, errors='ignore', creationflags=subprocess.CREATE_NO_WINDOW)
         if result.returncode == 0:
             return True, "路由删除成功"
         else:

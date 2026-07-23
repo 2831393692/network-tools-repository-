@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 from datetime import datetime
 
 class Logger:
@@ -25,13 +26,16 @@ class Logger:
         file_handler = logging.FileHandler(log_path, encoding="utf-8")
         file_handler.setLevel(logging.DEBUG)
         file_handler.setFormatter(formatter)
-        
-        console_handler = logging.StreamHandler()
-        console_handler.setLevel(logging.INFO)
-        console_handler.setFormatter(formatter)
-        
         self.logger.addHandler(file_handler)
-        self.logger.addHandler(console_handler)
+        
+        try:
+            sys.stdout.fileno()
+            console_handler = logging.StreamHandler()
+            console_handler.setLevel(logging.INFO)
+            console_handler.setFormatter(formatter)
+            self.logger.addHandler(console_handler)
+        except (AttributeError, ValueError, OSError):
+            pass
     
     def debug(self, message):
         self.logger.debug(message)

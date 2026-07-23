@@ -365,7 +365,8 @@ class TraceroutePage(QWidget):
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 text=True,
-                bufsize=1
+                bufsize=1,
+                creationflags=subprocess.CREATE_NO_WINDOW
             )
 
             for line in iter(self.tracert_process.stdout.readline, ''):
@@ -622,7 +623,7 @@ class TraceroutePage(QWidget):
             try:
                 result = subprocess.run(
                     f"ping -n 1 -w {timeout * 1000} {host}",
-                    capture_output=True, text=True, timeout=timeout + 2
+                    capture_output=True, text=True, timeout=timeout + 2, creationflags=subprocess.CREATE_NO_WINDOW
                 )
                 match = re.search(r'(?:时间|time)\s*[<=]?\s*(\d+)\s*ms', result.stdout, re.IGNORECASE)
                 if match:
@@ -644,7 +645,7 @@ class TraceroutePage(QWidget):
             try:
                 result = subprocess.run(
                     f"tracert -h 5 -w 2000 {target}",
-                    capture_output=True, text=True, timeout=15
+                    capture_output=True, text=True, timeout=15, creationflags=subprocess.CREATE_NO_WINDOW
                 )
                 lines = result.stdout.strip().split('\n')
                 hop_lines = [l for l in lines if re.match(r'^\s*\d+\s+', l)]

@@ -255,7 +255,7 @@ def parse_mac_address(ip):
     try:
         result = subprocess.run(
             ["arp", "-a", ip],
-            capture_output=True, text=True, timeout=3
+            capture_output=True, text=True, timeout=3, creationflags=subprocess.CREATE_NO_WINDOW
         )
         match = re.search(r'([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})', result.stdout)
         if match:

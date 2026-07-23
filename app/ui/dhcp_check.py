@@ -348,47 +348,63 @@ class DHCPCheckPage(QWidget):
 
     def _get_interface_mapping(self):
         mapping = {}
-        if not SCAPY_AVAILABLE:
-            return mapping
         try:
             import psutil
             psutil_addrs = psutil.net_if_addrs()
-            scapy_ifaces = get_if_list()
-            for siface in scapy_ifaces:
-                sip = ""
-                try:
-                    sip = get_if_addr(siface)
-                except Exception:
-                    pass
+            scapy_ifaces = get_if_list() if SCAPY_AVAILABLE else []
 
-                friendly_name = siface
+            for pname, paddrs in psutil_addrs.items():
+                ip = ""
                 mac = ""
+                for addr in paddrs:
+                    if addr.family == socket.AF_INET and not addr.address.startswith('127.'):
+                        ip = addr.address
+                    if hasattr(psutil, 'AF_LINK') and addr.family == psutil.AF_LINK:
+                        mac = addr.address
+                    elif hasattr(addr, 'family') and str(addr.family) == 'AddressFamily.AF_LINK':
+                        mac = addr.address
+
+                if not ip:
+                    continue
+
+                scapy_iface = None
+                for siface in scapy_ifaces:
+                    try:
+                        saddr = get_if_addr(siface)
+                        if saddr == ip:
+                            scapy_iface = siface
+                            break
+                    except Exception:
+                        continue
+
+                if not scapy_iface:
+                    scapy_iface = pname
+
+                if mac and ip:
+                    display = f"{pname} (IP: {ip}, MAC: {mac})"
+                elif ip:
+                    display = f"{pname} (IP: {ip})"
+                else:
+                    display = pname
+
+                mapping[scapy_iface] = display
+
+            if not mapping:
                 for pname, paddrs in psutil_addrs.items():
                     for addr in paddrs:
-                        if addr.family == socket.AF_INET and addr.address == sip:
-                            friendly_name = pname
-                            for a in paddrs:
-                                if a.family == psutil.AF_LINK:
-                                    mac = a.address
-                                    break
+                        if addr.family == socket.AF_INET and not addr.address.startswith('127.'):
+                            mapping[pname] = f"{pname} (IP: {addr.address})"
                             break
-                    if friendly_name != siface:
-                        break
 
-                if mac and sip:
-                    display = f"{friendly_name} (MAC: {mac}, IP: {sip})"
-                elif mac:
-                    display = f"{friendly_name} (MAC: {mac})"
-                elif sip:
-                    display = f"{friendly_name} (IP: {sip})"
-                else:
-                    display = friendly_name
-
-                mapping[siface] = display
         except Exception as e:
             self.logger.error(f"构建网卡映射失败: {e}")
-            for siface in get_if_list():
-                mapping[siface] = siface
+            if SCAPY_AVAILABLE:
+                for siface in get_if_list():
+                    try:
+                        sip = get_if_addr(siface)
+                        mapping[siface] = f"{siface} (IP: {sip})" if sip else siface
+                    except Exception:
+                        mapping[siface] = siface
         return mapping
 
     def _refresh_interfaces(self):
@@ -398,6 +414,10 @@ class DHCPCheckPage(QWidget):
             return
 
         mapping = self._get_interface_mapping()
+        if not mapping:
+            QMessageBox.warning(self, "警告", "未检测到可用的网络网卡，请检查网络连接")
+            return
+
         for siface, display in mapping.items():
             self.iface_combo.addItem(display, siface)
 

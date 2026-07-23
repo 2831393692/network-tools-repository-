@@ -154,13 +154,13 @@ def mtu_test_detailed(host):
         for size in test_sizes:
             if platform.system() == 'Windows':
                 cmd = ['ping', '-f', '-l', str(size - 28), '-n', '1', '-w', '2000', host]
-                result = subprocess.run(cmd, capture_output=True, text=True, errors='ignore')
+                result = subprocess.run(cmd, capture_output=True, text=True, errors='ignore', creationflags=subprocess.CREATE_NO_WINDOW)
                 out = result.stdout or ''
                 success = ('需要拆分数据包但是 DF 置位' not in out and
                            'Packet needs to be fragmented' not in out)
             else:
                 cmd = ['ping', '-M', 'do', '-s', str(size - 28), '-c', '1', '-W', '2', host]
-                result = subprocess.run(cmd, capture_output=True, text=True, errors='ignore')
+                result = subprocess.run(cmd, capture_output=True, text=True, errors='ignore', creationflags=subprocess.CREATE_NO_WINDOW)
                 success = result.returncode == 0
 
             results.append({'mtu': size, 'success': success})

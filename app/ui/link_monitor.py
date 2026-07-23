@@ -56,7 +56,7 @@ class LinkMonitorWorker(QThread):
                 timeout_sec += 2
 
             result = subprocess.run(
-                cmd, capture_output=True, text=True, timeout=timeout_sec
+                cmd, capture_output=True, text=True, timeout=timeout_sec, creationflags=subprocess.CREATE_NO_WINDOW
             )
             stdout = result.stdout
             success, latency = self._parse_ping_output(stdout)

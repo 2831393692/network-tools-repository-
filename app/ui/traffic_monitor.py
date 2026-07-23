@@ -486,7 +486,7 @@ class TrafficMonitorPage(QWidget):
         try:
             result = subprocess.run(
                 ["wmic", "nic", "where", "NetEnabled=true", "get", "NetConnectionID"],
-                capture_output=True, text=True, timeout=10
+                capture_output=True, text=True, timeout=10, creationflags=subprocess.CREATE_NO_WINDOW
             )
             lines = [line.strip() for line in result.stdout.strip().split("\n") if line.strip()]
             if lines and lines[0].lower() == "netconnectionid":
@@ -499,7 +499,7 @@ class TrafficMonitorPage(QWidget):
         try:
             result = subprocess.run(
                 ["powershell", "-Command", "Get-NetAdapter | Where-Object {$_.Status -eq 'Up'} | Select-Object -ExpandProperty Name"],
-                capture_output=True, text=True, timeout=10
+                capture_output=True, text=True, timeout=10, creationflags=subprocess.CREATE_NO_WINDOW
             )
             lines = [line.strip() for line in result.stdout.strip().split("\n") if line.strip()]
             return lines
@@ -524,7 +524,7 @@ class TrafficMonitorPage(QWidget):
             result = subprocess.run(
                 ["wmic", "path", "Win32_PerfRawData_Tcpip_NetworkInterface",
                  "where", f"Name='{iface}'", "get", "BytesReceivedPersec,BytesSentPersec"],
-                capture_output=True, text=True, timeout=10
+                capture_output=True, text=True, timeout=10, creationflags=subprocess.CREATE_NO_WINDOW
             )
             lines = [line.strip() for line in result.stdout.strip().split("\n") if line.strip()]
             if len(lines) >= 2 and "BytesReceivedPersec" in lines[0]:
@@ -539,7 +539,7 @@ class TrafficMonitorPage(QWidget):
             result = subprocess.run(
                 ["powershell", "-Command",
                  f"$s = Get-NetAdapterStatistics -Name '{iface}' -ErrorAction SilentlyContinue; if ($s) {{ $s.ReceivedBytes.ToString() + ' ' + $s.SentBytes.ToString() }}"],
-                capture_output=True, text=True, timeout=10
+                capture_output=True, text=True, timeout=10, creationflags=subprocess.CREATE_NO_WINDOW
             )
             line = result.stdout.strip()
             if line:
