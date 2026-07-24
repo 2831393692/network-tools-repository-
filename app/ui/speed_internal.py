@@ -212,7 +212,7 @@ class SpeedInternalPage(QWidget):
         self.server_port = QSpinBox()
         self.server_port.setRange(1024, 65535)
         self.server_port.setValue(5201)
-        self.server_port.setStyleSheet(self._spinbox_style())
+        self.server_port
         grid.addWidget(self.server_port, 0, 1)
 
         grid.addWidget(self._styled_label("本机网卡:"), 1, 0)
@@ -317,14 +317,14 @@ class SpeedInternalPage(QWidget):
         self.client_port = QSpinBox()
         self.client_port.setRange(1024, 65535)
         self.client_port.setValue(5201)
-        self.client_port.setStyleSheet(self._spinbox_style())
+        self.client_port
         grid.addWidget(self.client_port, 1, 1)
 
         grid.addWidget(self._styled_label("测试时长(秒):"), 2, 0)
         self.test_duration = QSpinBox()
         self.test_duration.setRange(1, 60)
         self.test_duration.setValue(10)
-        self.test_duration.setStyleSheet(self._spinbox_style())
+        self.test_duration
         grid.addWidget(self.test_duration, 2, 1)
 
         layout.addLayout(grid)

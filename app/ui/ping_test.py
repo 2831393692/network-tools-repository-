@@ -187,7 +187,6 @@ class PingTestPage(QWidget):
         self.single_count = QSpinBox()
         self.single_count.setRange(1, 10000)
         self.single_count.setValue(4)
-        self.single_count.setStyleSheet("padding: 4px; border: 1px solid #ccc; border-radius: 3px;")
         grid.addWidget(self.single_count, 0, 4)
         
         size_label = QLabel("📦 数据包大小:")
@@ -197,7 +196,6 @@ class PingTestPage(QWidget):
         self.single_size = QSpinBox()
         self.single_size.setRange(1, 65500)
         self.single_size.setValue(32)
-        self.single_size.setStyleSheet("padding: 4px; border: 1px solid #ccc; border-radius: 3px;")
         grid.addWidget(self.single_size, 1, 1)
         
         byte_label = QLabel("字节")
@@ -338,7 +336,7 @@ class PingTestPage(QWidget):
         self.cont_interval = QSpinBox()
         self.cont_interval.setRange(1, 60)
         self.cont_interval.setValue(1)
-        self.cont_interval.setStyleSheet("padding: 4px; border: 1px solid #ccc; border-radius: 3px;")
+        self.cont_interval
         grid.addWidget(self.cont_interval, 0, 4)
         
         sec_label = QLabel("秒")
@@ -352,7 +350,7 @@ class PingTestPage(QWidget):
         self.cont_size = QSpinBox()
         self.cont_size.setRange(1, 65500)
         self.cont_size.setValue(32)
-        self.cont_size.setStyleSheet("padding: 4px; border: 1px solid #ccc; border-radius: 3px;")
+        self.cont_size
         grid.addWidget(self.cont_size, 1, 1)
         
         layout.addWidget(config_frame)
@@ -491,7 +489,7 @@ class PingTestPage(QWidget):
         self.batch_timeout.setRange(100, 10000)
         self.batch_timeout.setValue(1500)
         self.batch_timeout.setSingleStep(100)
-        self.batch_timeout.setStyleSheet("padding: 4px; border: 1px solid #ccc; border-radius: 3px;")
+        self.batch_timeout
         timeout_layout.addWidget(self.batch_timeout)
         right_layout.addLayout(timeout_layout)
         
@@ -500,7 +498,7 @@ class PingTestPage(QWidget):
         self.batch_concurrent = QSpinBox()
         self.batch_concurrent.setRange(1, 500)
         self.batch_concurrent.setValue(100)
-        self.batch_concurrent.setStyleSheet("padding: 4px; border: 1px solid #ccc; border-radius: 3px;")
+        self.batch_concurrent
         concurrent_layout.addWidget(self.batch_concurrent)
         right_layout.addLayout(concurrent_layout)
         
@@ -508,7 +506,7 @@ class PingTestPage(QWidget):
         mode_layout.addWidget(QLabel("🔧 模式:"))
         self.batch_mode = QComboBox()
         self.batch_mode.addItems(["快速扫描", "完整检测"])
-        self.batch_mode.setStyleSheet("padding: 4px; border: 1px solid #ccc; border-radius: 3px;")
+        self.batch_mode
         mode_layout.addWidget(self.batch_mode)
         right_layout.addLayout(mode_layout)
         
@@ -517,7 +515,7 @@ class PingTestPage(QWidget):
         self.batch_interval = QSpinBox()
         self.batch_interval.setRange(0, 60)
         self.batch_interval.setValue(5)
-        self.batch_interval.setStyleSheet("padding: 4px; border: 1px solid #ccc; border-radius: 3px;")
+        self.batch_interval
         interval_layout.addWidget(self.batch_interval)
         right_layout.addLayout(interval_layout)
         
@@ -666,7 +664,7 @@ class PingTestPage(QWidget):
         self.subnet_iface = QComboBox()
         self.subnet_iface.addItem("自动选择")
         self.refresh_subnet_iface()
-        self.subnet_iface.setStyleSheet("padding: 4px; border: 1px solid #ccc; border-radius: 3px;")
+        self.subnet_iface
         grid.addWidget(self.subnet_iface, 0, 1)
         
         refresh_btn = QPushButton("🔄")
@@ -690,7 +688,7 @@ class PingTestPage(QWidget):
         self.subnet_range.setEditable(True)
         self.subnet_range.addItems(["192.168.1.0/24", "192.168.0.0/24", "10.0.0.0/24", "172.16.0.0/24"])
         self.subnet_range.setCurrentText("192.168.1.0/24")
-        self.subnet_range.setStyleSheet("padding: 4px; border: 1px solid #ccc; border-radius: 3px;")
+        self.subnet_range
         grid.addWidget(self.subnet_range, 1, 1)
         
         hint_label = QLabel("支持 /24~/32, 如 192.168.1.0/24, 192.168.1.192/26")
@@ -704,7 +702,7 @@ class PingTestPage(QWidget):
         self.subnet_timeout = QSpinBox()
         self.subnet_timeout.setRange(1, 60)
         self.subnet_timeout.setValue(5)
-        self.subnet_timeout.setStyleSheet("padding: 4px; border: 1px solid #ccc; border-radius: 3px;")
+        self.subnet_timeout
         grid.addWidget(self.subnet_timeout, 2, 1)
         
         sec_label = QLabel("秒")
@@ -718,7 +716,7 @@ class PingTestPage(QWidget):
         self.subnet_size = QSpinBox()
         self.subnet_size.setRange(1, 65500)
         self.subnet_size.setValue(32)
-        self.subnet_size.setStyleSheet("padding: 4px; border: 1px solid #ccc; border-radius: 3px;")
+        self.subnet_size
         grid.addWidget(self.subnet_size, 3, 1)
         
         byte_label = QLabel("字节")
@@ -732,7 +730,7 @@ class PingTestPage(QWidget):
         self.subnet_threads = QSpinBox()
         self.subnet_threads.setRange(1, 500)
         self.subnet_threads.setValue(50)
-        self.subnet_threads.setStyleSheet("padding: 4px; border: 1px solid #ccc; border-radius: 3px;")
+        self.subnet_threads
         grid.addWidget(self.subnet_threads, 4, 1)
         
         layout.addWidget(config_frame)
@@ -978,7 +976,7 @@ class PingTestPage(QWidget):
         self.tcp_port = QSpinBox()
         self.tcp_port.setRange(1, 65535)
         self.tcp_port.setValue(80)
-        self.tcp_port.setStyleSheet("padding: 4px; border: 1px solid #ccc; border-radius: 3px;")
+        self.tcp_port
         grid.addWidget(self.tcp_port, 0, 5)
         
         count_label = QLabel("🔢 测试次数:")
@@ -988,7 +986,7 @@ class PingTestPage(QWidget):
         self.tcp_count = QSpinBox()
         self.tcp_count.setRange(1, 10000)
         self.tcp_count.setValue(10)
-        self.tcp_count.setStyleSheet("padding: 4px; border: 1px solid #ccc; border-radius: 3px;")
+        self.tcp_count
         grid.addWidget(self.tcp_count, 1, 1)
         
         timeout_label = QLabel("⏱ 超时时间:")
@@ -998,7 +996,7 @@ class PingTestPage(QWidget):
         self.tcp_timeout = QSpinBox()
         self.tcp_timeout.setRange(1, 30)
         self.tcp_timeout.setValue(3)
-        self.tcp_timeout.setStyleSheet("padding: 4px; border: 1px solid #ccc; border-radius: 3px;")
+        self.tcp_timeout
         grid.addWidget(self.tcp_timeout, 1, 3)
         
         sec_label = QLabel("秒")

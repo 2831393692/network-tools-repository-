@@ -165,7 +165,7 @@ class LocalSettingsPage(QWidget):
             popen_kwargs = {"shell": use_shell}
             if new_console and platform.system() == "Windows":
                 popen_kwargs["creationflags"] = subprocess.CREATE_NEW_CONSOLE
-            subprocess.Popen(command, **popen_kwargs)
+            subprocess.Popen(command, **popen_kwargs, creationflags=subprocess.CREATE_NO_WINDOW)
         except OSError as e:
             # WinError 740 表示请求的操作需要提升，尝试以管理员身份运行
             if getattr(e, 'winerror', None) == 740:
@@ -191,7 +191,7 @@ class LocalSettingsPage(QWidget):
                 if args:
                     ps_cmd += f" -ArgumentList {args}"
                 ps_cmd += " -Verb RunAs"
-                subprocess.Popen(["powershell", "-Command", ps_cmd])
+                subprocess.Popen(["powershell", "-Command", ps_cmd], creationflags=subprocess.CREATE_NO_WINDOW)
             else:
                 # 字符串命令（通常配合 shell=True 使用）
                 subprocess.Popen([

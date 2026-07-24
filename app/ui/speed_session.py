@@ -155,28 +155,28 @@ class SpeedSessionPage(QWidget):
         self.delay_spin = QSpinBox()
         self.delay_spin.setRange(0, 1000)
         self.delay_spin.setValue(100)
-        self.delay_spin.setStyleSheet(self._spinbox_style())
+        self.delay_spin
         grid.addWidget(self.delay_spin, 1, 1)
 
         grid.addWidget(self._styled_label("线程数:"), 1, 2)
         self.threads_spin = QSpinBox()
         self.threads_spin.setRange(1, 100)
         self.threads_spin.setValue(10)
-        self.threads_spin.setStyleSheet(self._spinbox_style())
+        self.threads_spin
         grid.addWidget(self.threads_spin, 1, 3)
 
         grid.addWidget(self._styled_label("最大连接:"), 2, 0)
         self.max_conn_spin = QSpinBox()
         self.max_conn_spin.setRange(1, 100000)
         self.max_conn_spin.setValue(10000)
-        self.max_conn_spin.setStyleSheet(self._spinbox_style())
+        self.max_conn_spin
         grid.addWidget(self.max_conn_spin, 2, 1)
 
         grid.addWidget(self._styled_label("失败上限:"), 2, 2)
         self.fail_limit_spin = QSpinBox()
         self.fail_limit_spin.setRange(1, 1000)
         self.fail_limit_spin.setValue(100)
-        self.fail_limit_spin.setStyleSheet(self._spinbox_style())
+        self.fail_limit_spin
         grid.addWidget(self.fail_limit_spin, 2, 3)
 
         parent_layout.addWidget(frame)

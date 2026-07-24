@@ -349,7 +349,7 @@ class RemoteDesktopPage(QWidget):
         # 如果只填写了主机/IP（没有用户名和密码），直接执行 mstsc /v:host:port
         if not username and not password:
             cmd = f"mstsc /v:{host}:{port}"
-            subprocess.Popen(cmd, shell=True)
+            subprocess.Popen(cmd, shell=True, creationflags=subprocess.CREATE_NO_WINDOW)
             return
 
         # 生成临时 .rdp 文件
@@ -380,7 +380,7 @@ class RemoteDesktopPage(QWidget):
             temp_path = f.name
 
         try:
-            subprocess.Popen(f"mstsc \"{temp_path}\"", shell=True)
+            subprocess.Popen(f"mstsc \"{temp_path}\"", shell=True, creationflags=subprocess.CREATE_NO_WINDOW)
         except Exception:
             os.unlink(temp_path)
             raise

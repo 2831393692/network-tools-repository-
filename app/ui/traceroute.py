@@ -124,30 +124,7 @@ class TraceroutePage(QWidget):
                 background-color: white;
                 font-size: 12px;
                 min-height: 24px;
-            }
-            QSpinBox::up-button, QSpinBox::down-button {
-                width: 18px;
-                border: none;
-                background-color: #f0f0f0;
-            }
-            QSpinBox::up-button:hover, QSpinBox::down-button:hover {
-                background-color: #e0e0e0;
-            }
-            QSpinBox::up-arrow {
-                image: none;
-                border-left: 4px solid transparent;
-                border-right: 4px solid transparent;
-                border-bottom: 5px solid #555;
-                width: 0px;
-                height: 0px;
-            }
-            QSpinBox::down-arrow {
-                image: none;
-                border-left: 4px solid transparent;
-                border-right: 4px solid transparent;
-                border-top: 5px solid #555;
-                width: 0px;
-                height: 0px;
+                padding-right: 24px;
             }
         """)
         config_layout.addWidget(self.max_hops_spin, 1, 1)

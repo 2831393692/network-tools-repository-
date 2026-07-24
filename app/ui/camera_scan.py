@@ -480,14 +480,14 @@ class CameraScanPage(QWidget):
         self.threads_spin = QSpinBox()
         self.threads_spin.setRange(1, 200)
         self.threads_spin.setValue(50)
-        self.threads_spin.setStyleSheet(self._spinbox_style())
+        self.threads_spin
         grid.addWidget(self.threads_spin, 3, 1)
 
         grid.addWidget(self._styled_label("⏱ 超时(秒):"), 3, 2)
         self.timeout_spin = QSpinBox()
         self.timeout_spin.setRange(1, 10)
         self.timeout_spin.setValue(2)
-        self.timeout_spin.setStyleSheet(self._spinbox_style())
+        self.timeout_spin
         grid.addWidget(self.timeout_spin, 3, 3)
 
         # 按钮行

@@ -582,20 +582,35 @@ class HostDiscoveryPage(QWidget):
         mode_layout.addStretch()
         grid.addLayout(mode_layout, 1, 1, 1, 3)
 
-        # 第 2 行：线程数 / 超时
-        grid.addWidget(self._styled_label("⚡ 线程数:"), 2, 0)
+        # 第 2 行：线程数 / 超时（各占一半）
+        row2_layout = QHBoxLayout()
+        row2_layout.setSpacing(20)
+        
+        # 左半部分：线程数
+        threads_layout = QHBoxLayout()
+        threads_layout.setSpacing(8)
+        threads_layout.addWidget(self._styled_label("⚡ 线程数:"))
         self.threads_spin = QSpinBox()
         self.threads_spin.setRange(1, 200)
         self.threads_spin.setValue(50)
-        self.threads_spin.setStyleSheet(self._spinbox_style())
-        grid.addWidget(self.threads_spin, 2, 1)
-
-        grid.addWidget(self._styled_label("⏱ 超时(秒):"), 2, 2)
+        self.threads_spin.setFixedWidth(80)
+        threads_layout.addWidget(self.threads_spin)
+        threads_layout.addStretch()
+        
+        # 右半部分：超时
+        timeout_layout = QHBoxLayout()
+        timeout_layout.setSpacing(8)
+        timeout_layout.addWidget(self._styled_label("⏱ 超时(秒):"))
         self.timeout_spin = QSpinBox()
         self.timeout_spin.setRange(1, 10)
         self.timeout_spin.setValue(2)
-        self.timeout_spin.setStyleSheet(self._spinbox_style())
-        grid.addWidget(self.timeout_spin, 2, 3)
+        self.timeout_spin.setFixedWidth(80)
+        timeout_layout.addWidget(self.timeout_spin)
+        timeout_layout.addStretch()
+        
+        row2_layout.addLayout(threads_layout, 1)
+        row2_layout.addLayout(timeout_layout, 1)
+        grid.addLayout(row2_layout, 2, 0, 1, 4)
 
         # 第 3 行：按钮组
         btn_layout = QHBoxLayout()
