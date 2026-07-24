@@ -1,0 +1,16 @@
+*.pyc
+__pycache__/
+*.egg-info/
+dist/
+build/
+*.spec
+*.exe
+*.zip
+*.rar
+config/
+logs/
+*.log
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
